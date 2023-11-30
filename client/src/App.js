@@ -1,16 +1,16 @@
-import { Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes } from "react-router-dom";
 
 import './App.css';
 import Home from "./pages/Home";
-
+import Auth from "./pages/UserAuth";
 function App() {
   return (
-    <div className="App">
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home/>}/>
-        <Route path="/regi" element={<Home/>}/>
+        <Route path="/auth" element={<Auth/>}/>
       </Routes>
-    </div>
+    </BrowserRouter>
   );
 }
 
