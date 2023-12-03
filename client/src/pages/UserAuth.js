@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux';
+import {setToast} from "../store/toastSlice";
 
+import {loginValidate,regValidate} from "../script/validation"
 
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -27,18 +30,44 @@ const defaultTheme = createTheme();
 
 function UserAuth() {
   const [reg, setReg] = useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState("");
+  const [regInfo, setRegInfo] = useState({email:"",password:"",name:"",city:""});
+  const [loginInfo, setLoginInfo] = useState({email:"",password:""});
+  const [logError, setLogError] = useState({status:false,msg:"ok"});
+  const [regError, setRegError] = useState({status:false,msg:"ok"});
+  const dispatch=useDispatch();
+
+  const handleChange=(event)=>{
+    if(reg){
+      setRegInfo(info=>({...info,[event.target.name]:event.target.value}))
+    }
+    else{
+      setLoginInfo(info=>({...info,[event.target.name]:event.target.value}))
+    }
+  }
+
+  useEffect(()=>{
+    regValidate({...regInfo,setRegError})
+  },[regInfo,loginInfo])
+  useEffect(()=>{
+    loginValidate({...loginInfo,setLogError});
+  },[loginInfo])
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setMessage("form submitted")
-    setOpen(true);
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    if(reg){
+      if(regError.status){
+        dispatch(setToast({isToastOpen:true,message:regError.msg,severity:"error"}))
+        return;
+      }
+      console.log(regInfo);
+    }
+    else{
+      if(logError.status){
+        dispatch(setToast({isToastOpen:true,message:logError.msg,severity:"error"}))
+        return;
+      }
+      console.log(loginInfo);
+    }
   };
 
   return (
@@ -81,6 +110,7 @@ function UserAuth() {
             </Typography>
 
             <TextField
+              onChange={handleChange}
               margin="normal"
               required
               fullWidth
@@ -90,8 +120,10 @@ function UserAuth() {
               autoComplete="email"
               autoFocus
               variant='standard'
+              error={reg?((!regInfo.email.includes('.')||regInfo.email.length<4) && regInfo.email.length!=0):((!loginInfo.email.includes('.')||loginInfo.email.length<4) && loginInfo.email.length !=0)}
             />
             <TextField
+              onChange={handleChange}
               margin="normal"
               required
               fullWidth
@@ -101,9 +133,11 @@ function UserAuth() {
               id="password"
               autoComplete="current-password"
               variant='standard'
+              error={reg?(regInfo.password.length<5 && regInfo.password.length!=0 ):(loginInfo.password.length<5 &&loginInfo.password.length!=0)}
             />
             {reg &&
               <TextField
+                onChange={handleChange}
                 margin="normal"
                 required
                 fullWidth
@@ -113,10 +147,12 @@ function UserAuth() {
                 id="name"
                 autoComplete="Ashanur Hossain"
                 variant='standard'
+                error={regInfo.name.length<3 && regInfo.name.length !=0}
               />
             }
             {reg &&
               <TextField
+                onChange={handleChange}
                 margin="normal"
                 required
                 fullWidth
@@ -164,7 +200,7 @@ function UserAuth() {
           </Box>
         </Grid>
       </Grid>
-      <Toast open={open} setOpen={setOpen} message={message}/>
+      <Toast />
     </ThemeProvider>
   )
 }

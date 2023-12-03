@@ -1,25 +1,36 @@
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, Snackbar, colors } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux'
+import { setToast } from '../store/toastSlice';
+
 import React from 'react'
 
-function Toast({ open,setOpen, message }) {
+function Toast() {
+
+    const dispatch=useDispatch();
+    const {isToastOpen,message,severity}=useSelector(state=>state.toast)
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
 
-        setOpen(false);
+        dispatch(setToast({isToastOpen:false}));
     };
 
     return (
         <>
             <Snackbar
                 autoHideDuration={2000}
-                open={open}
+                open={isToastOpen}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                message={message}
                 onClose={handleClose}
-            />
+                sx={{ backgroundColor: colors.teal }}
+                severity="error"
+            >
+                <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+                    {message}
+                </Alert>
+            </Snackbar>
         </>
     )
 }
