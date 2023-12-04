@@ -174,14 +174,14 @@ function UserAuth() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              {reg?"Sign Up":"Sign In"}
             </Button>
             <Grid container>
-              <Grid item xs>
+              {!reg && <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
-              </Grid>
+              </Grid>}
               <Grid item>
                 {
                   reg ? (
